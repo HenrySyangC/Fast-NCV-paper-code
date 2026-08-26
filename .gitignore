@@ -1,0 +1,12 @@
+# macOS metadata
+.DS_Store
+
+# R temporary files
+.Rhistory
+.RData
+.Rproj.user/
+
+# renv package binaries (renv.lock stays tracked)
+renv/library/
+renv/python/
+renv/staging/
