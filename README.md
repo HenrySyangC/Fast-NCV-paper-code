@@ -122,8 +122,8 @@ Rscript plot-sim.R
 | **comp_cutoff** | Figure 3 | ~5 hours | 
 | **FPCR** | Figure 4(a), Figure 4(b) | ~10 mins |
 
-> ⚠️ Benchmarked on a **MacBook (M2)**. 
-> 💡 *Simulation **FPCR** supports parallel processing—running with more cores will reduce runtime.*
+* ⚠️ Benchmarked on a **MacBook (M2)**. 
+* 💡 *Simulation **FPCR** supports parallel processing—running with more cores will reduce runtime.*
 
 ---
 
