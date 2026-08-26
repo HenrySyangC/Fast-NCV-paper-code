@@ -215,7 +215,7 @@ p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
     y = "Generalization Error"
   ) +
   
-  # Springer Journal Base Theme
+  # Journal Base Theme
   theme_minimal(base_size = 9, base_family = "sans") +
   theme(
     plot.title       = element_text(face = "bold", size = 11, color = "black", hjust = 0.5, margin = margin(b = 6)),
