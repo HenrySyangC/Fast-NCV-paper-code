@@ -128,80 +128,100 @@ reml_data$component      <- factor(reml_data$component, levels = unique_variance
 
 
 # Plot the prediction error curve
+# Specific index positions for exact powers of 10
+idx_breaks <- c(1, 13, 26, 38, 51, 63, 76, 88, 100)
+idx_labels <- c(
+  expression(10^-1), 
+  expression(10^-0.5), 
+  expression(10^0), 
+  expression(10^0.5), 
+  expression(10^1), 
+  expression(10^1.5), 
+  expression(10^2), 
+  expression(10^2.5), 
+  expression(10^3)
+)
+
 p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
   
-  # Boxplot layer
+  # Boxplot layer (Row 1 of Legend)
   geom_boxplot(
-    aes(group = lambda_idx, fill = "Prediction Errors"), 
+    aes(group = lambda_idx, fill = "Generalization Error"), 
     alpha = 0.7, width = 0.5, outlier.shape = NA, linewidth = 0.3
   ) +
   
-  # NCV lines (using shortened labels inside aes for legend display)
+  # NCV Upper and Lower bounds merged into one legend entry
   geom_line(
-    data = method_data, aes(x = lambda_idx, y = ncv_upper, linetype = "NCV 95% Upper", group = 1),
+    data = method_data, 
+    aes(x = lambda_idx, y = ncv_upper, linetype = "NCV 95% Upper/Lower", group = 1),
     color = "gray40", linewidth = 0.4, inherit.aes = FALSE
   ) +
   geom_line(
-    data = method_data, aes(x = lambda_idx, y = ncv_lower, linetype = "NCV 95% Lower", group = 1),
+    data = method_data, 
+    aes(x = lambda_idx, y = ncv_lower, linetype = "NCV 95% Upper/Lower", group = 1),
     color = "gray40", linewidth = 0.4, inherit.aes = FALSE
-  ) +
-  geom_line(
-    data = method_data, aes(x = lambda_idx, y = ncv_pe, linetype = "NCV Point Est.", group = 1),
-    color = "black", linewidth = 0.8, inherit.aes = FALSE
   ) +
   
-  # Vertical optimal lines
+  # Point Estimate & Optimal Lines
+  geom_line(
+    data = method_data, 
+    aes(x = lambda_idx, y = ncv_pe, linetype = "NCV Point Est.", group = 1),
+    color = "black", linewidth = 0.8, inherit.aes = FALSE
+  ) +
   geom_vline(
-    data = opt_lines_data, aes(xintercept = reml_opt, linetype = "REML Opt."), 
+    data = opt_lines_data, 
+    aes(xintercept = reml_opt, linetype = "REML Opt."), 
     color = "black", linewidth = 0.5
   ) +
   geom_vline(
-    data = opt_lines_data, aes(xintercept = loo_opt, linetype = "LOO Opt."), 
+    data = opt_lines_data, 
+    aes(xintercept = loo_opt, linetype = "LOO Opt."), 
     color = "black", linewidth = 0.5
   ) +
   geom_vline(
-    data = opt_lines_data, aes(xintercept = gcv_opt, linetype = "GCV Opt."), 
+    data = opt_lines_data, 
+    aes(xintercept = gcv_opt, linetype = "GCV Opt."), 
     color = "black", linewidth = 0.5
   ) +
   
   facet_wrap(~ component, ncol = 1, scales = "free_y") +  
 
-  # Manual scales with concise, publication-ready labels
+  # Manual scales
   scale_fill_manual(
     name = NULL, 
-    values = c("Prediction Errors" = "gray93")
+    values = c("Generalization Error" = "gray93")
   ) +
   scale_linetype_manual(
     name = NULL,
     values = c(
-      "NCV Point Est." = "solid",
-      "NCV 95% Upper"  = "solid",      
-      "NCV 95% Lower"  = "solid",      
-      "REML Opt."      = "dashed",
-      "LOO Opt."       = "longdash",
-      "GCV Opt."       = "twodash"
+      "NCV 95% Upper/Lower" = "solid",
+      "NCV Point Est."      = "solid",      
+      "REML Opt."           = "dashed",
+      "LOO Opt."            = "longdash",
+      "GCV Opt."            = "twodash"
     )
   ) +
   
+  # Clean mathematical power-of-10 x-axis mapping
   scale_x_continuous(
-    breaks = seq(start_visual_idx, end_visual_idx, by = 10),
-    labels = round(lambdas[seq(start_visual_idx, end_visual_idx, by = 10)], 2)
+    breaks = idx_breaks,
+    labels = idx_labels
   ) + 
-  coord_cartesian(xlim = c(start_visual_idx, end_visual_idx)) +
+  coord_cartesian(xlim = c(1, 100)) +
   
   labs(
-    title = "Prediction Error Analysis",
-    x = expression(lambda ~ "Value"),
-    y = "Prediction Error"
+    title = "Generalization Error Analysis",
+    x = expression(Tuning ~ Parameter ~ (lambda)),
+    y = "Generalization Error"
   ) +
   
-  # Base theme
+  # Springer Journal Base Theme
   theme_minimal(base_size = 9, base_family = "sans") +
   theme(
     plot.title       = element_text(face = "bold", size = 11, color = "black", hjust = 0.5, margin = margin(b = 6)),
     axis.title.x     = element_text(face = "bold", size = 9.5, color = "black", margin = margin(t = 4)),
     axis.title.y     = element_text(face = "bold", size = 9.5, color = "black", margin = margin(r = 4)),
-    axis.text.x      = element_text(angle = 45, hjust = 1, size = 8, color = "black"),
+    axis.text.x      = element_text(angle = 0, hjust = 0.5, size = 8, color = "black"), # Horizontal alignment for power labels
     axis.text.y      = element_text(size = 8, color = "black"),
     
     panel.grid.minor = element_blank(),
@@ -211,40 +231,34 @@ p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
     strip.background = element_rect(fill = "gray95", color = "black", linewidth = 0.4),
     strip.text       = element_text(face = "bold", size = 8.5, color = "black"), 
     
-    # Tightened Legend Layout
+    # Legend settings
     legend.position   = "bottom",
     legend.box        = "vertical",
-    legend.text       = element_text(size = 7),             # Slightly smaller font to guarantee fit
+    legend.box.just   = "center",
+    legend.text       = element_text(size = 6.8),
     legend.margin     = margin(t = -2, b = 0),
     legend.box.margin = margin(t = -2, b = 0),
-    legend.key.width  = unit(0.6, "lines"),                 # Shorter line sample key
-    legend.key.height = unit(0.8, "lines"),
-    legend.spacing.x  = unit(0.15, "lines"),                # Tightened space between key and label
+    legend.key.width  = unit(0.55, "lines"),
+    legend.key.height = unit(0.75, "lines"),
+    legend.spacing.x  = unit(0.12, "lines"),
     
     panel.spacing.y   = unit(0.4, "lines")
   ) +
   
-  # Custom guide layout: 3 rows x 2 columns for a compact vertical footprint
   guides(
-    fill = guide_legend(order = 1),
-    linetype = guide_legend(
-      order = 2,
-      nrow = 3,                                             # 3 rows x 2 columns fits narrow widths cleanly
-      byrow = TRUE,
-      override.aes = list(linewidth = 0.6)
-    )
+    fill = guide_legend(order = 1, nrow = 1),
+    linetype = guide_legend(order = 2, nrow = 2, byrow = TRUE, override.aes = list(linewidth = 0.6))
   )
 
-# PLOT 2: Negative REML Curves
 p2 <- ggplot(reml_data, aes(x = lambda_idx, y = reml_val)) +
   
   # REML Curve layer
   geom_line(
-    aes(group = dataset, color = "REML Curve", linetype = "REML Curve"), 
+    aes(group = dataset, color = "Log-REML Curve", linetype = "Log-REML Curve"), 
     linewidth = 0.6
   ) +
   
-  # Matching Vertical Optimal Lines from CV / REML / LOO / GCV
+  # Vertical Optimal Lines
   geom_vline(
     data = opt_lines_data, 
     aes(xintercept = reml_opt, color = "REML Opt.", linetype = "REML Opt."), 
@@ -261,49 +275,48 @@ p2 <- ggplot(reml_data, aes(x = lambda_idx, y = reml_val)) +
     linewidth = 0.5
   ) +
   
-  # Color scale mapping (all black to match publication theme)
+  # Scale Mappings
   scale_color_manual(
     name = NULL,
     values = c(
-      "REML Curve" = "black",
-      "REML Opt."  = "black",
-      "LOO Opt."   = "black",
-      "GCV Opt."   = "black"
+      "Log-REML Curve" = "black",
+      "REML Opt."      = "black",
+      "LOO Opt."       = "black",
+      "GCV Opt."       = "black"
     )
   ) +
-  
-  # Linetype scale mapping matching p1 exactly
   scale_linetype_manual(
     name = NULL,
     values = c(
-      "REML Curve" = "solid",
-      "REML Opt."  = "dashed",
-      "LOO Opt."   = "longdash",
-      "GCV Opt."   = "twodash"
+      "Log-REML Curve" = "solid",
+      "REML Opt."      = "dashed",
+      "LOO Opt."       = "longdash",
+      "GCV Opt."       = "twodash"
     )
   ) +
   
   facet_wrap(~ component, ncol = 1, scales = "free_y") +
   
+  # Clean mathematical power-of-10 x-axis mapping
   scale_x_continuous(
-    breaks = seq(start_visual_idx, end_visual_idx, by = 10),
-    labels = round(lambdas[seq(start_visual_idx, end_visual_idx, by = 10)], 2)
+    breaks = idx_breaks,
+    labels = idx_labels
   ) + 
-  coord_cartesian(xlim = c(start_visual_idx, end_visual_idx)) +
+  coord_cartesian(xlim = c(1, 100)) +
   
   labs(
-    title = "Negative REML Curves",
-    x = expression(lambda ~ "Value"),
-    y = "Negative REML Score (-REML)"
+    title = "Negative Log-REML Curves",
+    x = expression(Tuning ~ Parameter ~ (lambda)),
+    y = "Negative Log-REML Score"
   ) +
   
+  # Springer Journal Base Theme
   theme_minimal(base_size = 9, base_family = "sans") +
   theme(
-    # Titles & Labels (Explicitly matched to p1)
     plot.title       = element_text(face = "bold", size = 11, color = "black", hjust = 0.5, margin = margin(b = 6)),
     axis.title.x     = element_text(face = "bold", size = 9.5, color = "black", margin = margin(t = 4)),
     axis.title.y     = element_text(face = "bold", size = 9.5, color = "black", margin = margin(r = 4)),
-    axis.text.x      = element_text(angle = 45, hjust = 1, size = 8, color = "black"),
+    axis.text.x      = element_text(angle = 0, hjust = 0.5, size = 8, color = "black"), # Horizontal alignment for power labels
     axis.text.y      = element_text(size = 8, color = "black"),
     
     panel.grid.minor = element_blank(),
@@ -313,30 +326,23 @@ p2 <- ggplot(reml_data, aes(x = lambda_idx, y = reml_val)) +
     strip.background = element_rect(fill = "gray95", color = "black", linewidth = 0.4),
     strip.text       = element_text(face = "bold", size = 8.5, color = "black"), 
     
-    # Tightened Legend Layout matching p1
+    # Legend settings
     legend.position   = "bottom",
     legend.box        = "vertical",
-    legend.text       = element_text(size = 7),
+    legend.box.just   = "center",
+    legend.text       = element_text(size = 6.8),
     legend.margin     = margin(t = -2, b = 0),
     legend.box.margin = margin(t = -2, b = 0),
-    legend.key.width  = unit(0.6, "lines"),
-    legend.key.height = unit(0.8, "lines"),
-    legend.spacing.x  = unit(0.15, "lines"),
+    legend.key.width  = unit(0.55, "lines"),
+    legend.key.height = unit(0.75, "lines"),
+    legend.spacing.x  = unit(0.12, "lines"),
     
     panel.spacing.y   = unit(0.4, "lines")
   ) +
   
-  # Arranged into a clean 2-row grid to fit side-by-side LaTeX layouts
   guides(
-    color = guide_legend(
-      nrow = 2,
-      byrow = TRUE,
-      override.aes = list(linewidth = 0.6)
-    ),
-    linetype = guide_legend(
-      nrow = 2,
-      byrow = TRUE
-    )
+    color = guide_legend(nrow = 2, byrow = TRUE, override.aes = list(linewidth = 0.6)),
+    linetype = guide_legend(nrow = 2, byrow = TRUE)
   )
 
 # Save the plots as a PDF
