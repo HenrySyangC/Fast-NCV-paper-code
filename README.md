@@ -133,9 +133,9 @@ If you use this code in your research, please cite our preprint:
 
 ```bibtex
 @article{yourname2026title,
-  title={Your Paper Title},
-  author={Your Name and Co-authors},
-  journal={arXiv / BioRxiv / SSRN},
+  title={Fast Computation of Nested Cross-Validation for Penalized Regression},
+  author={Shuyang Cao and Alex Stringer},
+  journal={arXiv},
   year={2026}
 }
 ```
