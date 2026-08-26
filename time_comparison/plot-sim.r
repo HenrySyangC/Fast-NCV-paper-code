@@ -97,7 +97,6 @@ p1 <- ggplot(ratio_regime1, aes(x = factor(n), y = ratio)) +
     y = expression(Log[2] ~ "Relative Computation Time (Slow/Fast)")
   ) +
   
-  # Springer Journal Base Theme (9pt)
   theme_minimal(base_size = 9, base_family = "sans") +
   theme(
     plot.title       = element_text(face = "bold", size = 11, color = "black", hjust = 0.5, margin = margin(b = 6)),
@@ -156,7 +155,6 @@ p2 <- ggplot(ratio_regime2, aes(x = factor(n), y = ratio)) +
     y = expression(Log[2] ~ "Relative Computation Time (Slow/Fast)")
   ) +
   
-  # Springer Journal Base Theme (9pt)
   theme_minimal(base_size = 9, base_family = "sans") +
   theme(
     plot.title       = element_text(face = "bold", size = 11, color = "black", hjust = 0.5, margin = margin(b = 6)),
