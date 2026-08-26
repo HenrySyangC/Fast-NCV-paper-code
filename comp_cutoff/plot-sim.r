@@ -185,7 +185,6 @@ p <- ggplot(df_long, aes(x = K_vals, y = Relative_Time, group = Dataset)) +
     y = "Relative Computation Time"
   ) +
   
-  # Springer Journal Typography Guidelines (8pt - 11pt target range)
   theme(
     plot.title       = element_text(face = "bold", hjust = 0.5, size = 11, margin = margin(b = 6)),
     axis.title.x     = element_text(size = 9.5, margin = margin(t = 4)),
