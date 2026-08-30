@@ -129,17 +129,20 @@ reml_data$component      <- factor(reml_data$component, levels = unique_variance
 
 # Plot the prediction error curve
 # Specific index positions for exact powers of 10
-idx_breaks <- c(1, 13, 26, 38, 51, 63, 76, 88, 100)
+# Exact index locations for powers of 10 from 10^-1 to 10^7
+idx_breaks <- round(seq(1, 100, length.out = 9))
+# Yields indices: c(1, 13, 26, 38, 51, 63, 76, 88, 100)
+
 idx_labels <- c(
   expression(10^-1), 
-  expression(10^-0.5), 
   expression(10^0), 
-  expression(10^0.5), 
   expression(10^1), 
-  expression(10^1.5), 
   expression(10^2), 
-  expression(10^2.5), 
-  expression(10^3)
+  expression(10^3),
+  expression(10^4),
+  expression(10^5),
+  expression(10^6),
+  expression(10^7)
 )
 
 p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
@@ -184,7 +187,7 @@ p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
     color = "black", linewidth = 0.5
   ) +
   
-  facet_wrap(~ component, ncol = 1, scales = "free_y") +  
+  facet_wrap(~ component, ncol = 1) +  
 
   # Manual scales
   scale_fill_manual(
@@ -295,7 +298,7 @@ p2 <- ggplot(reml_data, aes(x = lambda_idx, y = reml_val)) +
     )
   ) +
   
-  facet_wrap(~ component, ncol = 1, scales = "free_y") +
+  facet_wrap(~ component, ncol = 1) +
   
   # Clean mathematical power-of-10 x-axis mapping
   scale_x_continuous(
@@ -309,6 +312,7 @@ p2 <- ggplot(reml_data, aes(x = lambda_idx, y = reml_val)) +
     x = expression(Tuning ~ Parameter ~ (lambda)),
     y = "Negative Log-REML Score"
   ) +
+  
   
   theme_minimal(base_size = 9, base_family = "sans") +
   theme(

@@ -189,25 +189,35 @@ fit_fpcr <- function(X, y, pci, spline_num = 40, lam) {
 }
 
 # Function for generating data
-gendat2 <- function(N, P, noise_sd) {
-  # N = number of samples, P = number of time points/features (e.g., 100)
-  
-  # 1. Create a true smooth sine wave weight profile across the P features
+gendat2 <- function(N, P, noise_sd, rho = 2) {
+  # Time grid and quadrature step size
   grid <- seq(0.01, 1, length.out = P)
-  true_w <- sin(2 * pi * grid) 
+  dt <- 1 / P
   
-  # 2. Generate X as a SMOOTH signal (Autoregressive structure)
-  # This makes adjacent columns correlated, like a real signal
-  times <- 1:P
-  sigma_X <- exp(-0.1 * as.matrix(dist(times))) # Correlation matrix
-  X <- rmvnorm(N, sigma = sigma_X)
-  X <- sweep(X, 2, colMeans(X), FUN = "-")
+  # True parameter function (true_w)
+  true_w <- sin(2 * pi * grid)
   
-  # 3. Generate y using the true weights + some observations noise
-  y <- X %*% true_w + rnorm(N, mean = 0, sd = noise_sd)
-  y <- y - mean(y)
+  # Covariance matrix for X(t)
+  dist_mat <- as.matrix(dist(grid))
+  Cov_mat <- exp(-dist_mat / rho)
   
-  return(list(X = X, y = y, true_w = true_w))
+  # Generate predictor matrix X
+  X <- rmvnorm(n = N, mean = rep(0, P), sigma = Cov_mat)
+  
+  # Compute continuous signal with step size dt
+  signal <- as.vector((X %*% true_w) * dt)
+  
+  # Generate response y
+  y <- signal + rnorm(N, mean = 0, sd = noise_sd)
+  
+  return(list(
+    y = y,
+    X = X,
+    grid = grid,
+    dt = dt,
+    true_w = true_w,
+    signal = signal
+  ))
 }
 
 ## REML
@@ -375,8 +385,8 @@ for (j in 1:10) {
 }
 
 # Set up parameters for the main simulation
-pcis <- c(15, 30)
-lambdas <- 10^seq(-1, 3, length.out = 100)
+pcis <- c(5, 20)
+lambdas <- 10^seq(-1, 7, length.out = 100)
 data_index <- c(2) # datasets to run the main simulation on
 
 ## Do simulations
