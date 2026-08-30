@@ -185,7 +185,8 @@ fit_fpcr <- function(X, y, pci, spline_num = 40, lam) {
               VA = VA, 
               var_prop = variance_proportion,
               fit_coef = pci_coef, 
-              lambda = lam))
+              lambda = lam, 
+              eigen_values = eigen_values))
 }
 
 # Function for generating data
@@ -212,9 +213,8 @@ gendat2 <- function(N, P, noise_sd, rho = 2) {
   
   return(list(
     y = y,
-    X = X,
+    X = X * dt,
     grid = grid,
-    dt = dt,
     true_w = true_w,
     signal = signal
   ))
@@ -385,8 +385,8 @@ for (j in 1:10) {
 }
 
 # Set up parameters for the main simulation
-pcis <- c(5, 20)
-lambdas <- 10^seq(-1, 7, length.out = 100)
+pcis <- c(5, 10)
+lambdas <- 10^seq(-2, 2.5, length.out = 100)
 data_index <- c(2) # datasets to run the main simulation on
 
 ## Do simulations

@@ -129,21 +129,36 @@ reml_data$component      <- factor(reml_data$component, levels = unique_variance
 
 # Plot the prediction error curve
 # Specific index positions for exact powers of 10
+get_lambda_axis_spec <- function(lambdas, n_breaks = 8) {
+  # Calculate exponent bounds from the actual lambdas vector
+  log_range <- log10(range(lambdas))
+  
+  # Generate clean integer exponents (powers of 10) across the range
+  exp_min <- ceiling(log_range[1])
+  exp_max <- floor(log_range[2])
+  exponents <- seq(exp_min, exp_max, by = 1)
+  
+  # Downsample exponents if the range spans too many decades to prevent overlapping
+  if (length(exponents) > n_breaks) {
+    step <- ceiling(length(exponents) / n_breaks)
+    exponents <- exponents[seq(1, length(exponents), by = step)]
+  }
+  
+  # Compute target lambda values for these exponents
+  target_lambdas <- 10^exponents
+  
+  # Find the closest index position in your lambdas array for each target exponent
+  idx_breaks <- sapply(target_lambdas, function(val) which.min(abs(lambdas - val)))
+  
+  # Create plotmath expressions (10^exp) dynamically
+  idx_labels <- lapply(exponents, function(e) bquote(10^.(e)))
+  
+  list(breaks = idx_breaks, labels = idx_labels)
+}
 # Exact index locations for powers of 10 from 10^-1 to 10^7
-idx_breaks <- round(seq(1, 100, length.out = 9))
-# Yields indices: c(1, 13, 26, 38, 51, 63, 76, 88, 100)
-
-idx_labels <- c(
-  expression(10^-1), 
-  expression(10^0), 
-  expression(10^1), 
-  expression(10^2), 
-  expression(10^3),
-  expression(10^4),
-  expression(10^5),
-  expression(10^6),
-  expression(10^7)
-)
+idx <- get_lambda_axis_spec(lambdas)
+idx_breaks <- idx$breaks
+idx_labels <- idx$labels
 
 p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
   
@@ -210,7 +225,9 @@ p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
     breaks = idx_breaks,
     labels = idx_labels
   ) + 
+
   coord_cartesian(xlim = c(1, 100)) +
+
   
   labs(
     title = "Generalization Error Analysis",
