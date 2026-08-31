@@ -386,7 +386,7 @@ for (j in 1:10) {
 
 # Set up parameters for the main simulation
 pcis <- c(5, 10)
-lambdas <- 10^seq(-2, 2.5, length.out = 100)
+lambdas <- 10^seq(-1, 2.2, length.out = 100)
 data_index <- c(2) # datasets to run the main simulation on
 
 ## Do simulations
