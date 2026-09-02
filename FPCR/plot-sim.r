@@ -44,10 +44,10 @@ full_range <- 1:length(lambdas)      # Full data index range for finding true op
 start_visual_idx <- 1  # Change this to shift the start window (e.g., 30, 50)
 end_visual_idx   <- 100 # Change this to shift the end window (e.g., 80, 90)
 
-pred_data_list <- list()
+pred_data_list   <- list()
 method_data_list <- list()
-opt_lines_list <- list()
-reml_data_list <- list()
+opt_lines_list   <- list()
+reml_data_list   <- list()
 
 # Track unique combinations to order factor levels later
 unique_variance_labels <- c()
@@ -66,8 +66,9 @@ for (k in 1:num_datasets) {
   
   for (pind in 1:num_components) {
     ds_label  <- paste("Dataset", k)
-    # Exclusively tracking Variance Explained for column headers
-    var_label <- paste0(round(var_prop[pind] * 100, 2), "% Variance Explained")
+    
+    # FIX 1: Include component index to guarantee unique labels even if percentages match
+    var_label <- paste0("Comp ", pind, ": ", round(var_prop[pind] * 100, 2), "% Variance Explained")
     
     if (k == 1) {
       unique_variance_labels <- c(unique_variance_labels, var_label)
@@ -104,7 +105,7 @@ for (k in 1:num_datasets) {
       dataset    = ds_label,
       component  = var_label,
       lambda_idx = full_range,
-      reml_val   = -reml[full_range, pind] # <--- Added a minus sign here to flip the curve
+      reml_val   = -reml[full_range, pind] # Flipped curve
     )
   }
 }
@@ -115,60 +116,51 @@ method_data    <- do.call(rbind, method_data_list)
 opt_lines_data <- do.call(rbind, opt_lines_list)
 reml_data      <- do.call(rbind, reml_data_list)
 
-# Filter out indices outside our global visualization threshold window
+# Filter out indices outside global visualization threshold window
 pred_data   <- pred_data[pred_data$lambda_idx >= start_visual_idx & pred_data$lambda_idx <= end_visual_idx, ]
 method_data <- method_data[method_data$lambda_idx >= start_visual_idx & method_data$lambda_idx <= end_visual_idx, ]
 reml_data   <- reml_data[reml_data$lambda_idx >= start_visual_idx & reml_data$lambda_idx <= end_visual_idx, ]
 
-# Ensure headers stay in the correct order based on the variance strings
-pred_data$component      <- factor(pred_data$component, levels = unique_variance_labels)
-method_data$component    <- factor(method_data$component, levels = unique_variance_labels)
-opt_lines_data$component <- factor(opt_lines_data$component, levels = unique_variance_labels)
-reml_data$component      <- factor(reml_data$component, levels = unique_variance_labels)
+# FIX 2: Force unique() on levels to prevent factor duplicate error
+unique_levels <- unique(unique_variance_labels)
+pred_data$component      <- factor(pred_data$component, levels = unique_levels)
+method_data$component    <- factor(method_data$component, levels = unique_levels)
+opt_lines_data$component <- factor(opt_lines_data$component, levels = unique_levels)
+reml_data$component      <- factor(reml_data$component, levels = unique_levels)
 
-
-# Plot the prediction error curve
-# Specific index positions for exact powers of 10
+# Helper function for dynamic X-axis
 get_lambda_axis_spec <- function(lambdas, n_breaks = 8) {
-  # Calculate exponent bounds from the actual lambdas vector
   log_range <- log10(range(lambdas))
   
-  # Generate clean integer exponents (powers of 10) across the range
   exp_min <- ceiling(log_range[1])
   exp_max <- floor(log_range[2])
   exponents <- seq(exp_min, exp_max, by = 1)
   
-  # Downsample exponents if the range spans too many decades to prevent overlapping
   if (length(exponents) > n_breaks) {
     step <- ceiling(length(exponents) / n_breaks)
     exponents <- exponents[seq(1, length(exponents), by = step)]
   }
   
-  # Compute target lambda values for these exponents
   target_lambdas <- 10^exponents
-  
-  # Find the closest index position in your lambdas array for each target exponent
   idx_breaks <- sapply(target_lambdas, function(val) which.min(abs(lambdas - val)))
-  
-  # Create plotmath expressions (10^exp) dynamically
   idx_labels <- lapply(exponents, function(e) bquote(10^.(e)))
   
   list(breaks = idx_breaks, labels = idx_labels)
 }
-# Exact index locations for powers of 10 from 10^-1 to 10^7
+
 idx <- get_lambda_axis_spec(lambdas)
 idx_breaks <- idx$breaks
 idx_labels <- idx$labels
 
 p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
   
-  # Boxplot layer (Row 1 of Legend)
+  # Boxplot layer
   geom_boxplot(
     aes(group = lambda_idx, fill = "Generalization Error"), 
     alpha = 0.7, width = 0.5, outlier.shape = NA, linewidth = 0.3
   ) +
   
-  # NCV Upper and Lower bounds merged into one legend entry
+  # NCV Upper and Lower bounds
   geom_line(
     data = method_data, 
     aes(x = lambda_idx, y = ncv_upper, linetype = "NCV 95% Upper/Lower", group = 1),
@@ -226,8 +218,13 @@ p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
     labels = idx_labels
   ) + 
 
-  coord_cartesian(xlim = c(1, 100)) +
+  # FIX 3: Tight Y-axis scaling using standard R functions without over-expanding
+  scale_y_continuous(
+    expand = expansion(mult = c(0.01, 0.02)),
+    breaks = function(limits) pretty(limits, n = 5)
+  ) +
 
+  coord_cartesian(xlim = c(1, 100)) +
   
   labs(
     title = "Generalization Error Analysis",
@@ -241,7 +238,7 @@ p1 <- ggplot(pred_data, aes(x = lambda_idx, y = pred_error)) +
     plot.title       = element_text(face = "bold", size = 11, color = "black", hjust = 0.5, margin = margin(b = 6)),
     axis.title.x     = element_text(face = "bold", size = 9.5, color = "black", margin = margin(t = 4)),
     axis.title.y     = element_text(face = "bold", size = 9.5, color = "black", margin = margin(r = 4)),
-    axis.text.x      = element_text(angle = 0, hjust = 0.5, size = 8, color = "black"), # Horizontal alignment for power labels
+    axis.text.x      = element_text(angle = 0, hjust = 0.5, size = 8, color = "black"),
     axis.text.y      = element_text(size = 8, color = "black"),
     
     panel.grid.minor = element_blank(),
