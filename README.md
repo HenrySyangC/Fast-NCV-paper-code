@@ -5,9 +5,7 @@ This repository contains the R source code required to reproduce the simulation 
 > **Fast Computation of Nested Cross-Validation for Penalized Regression**  
 > Shuyang Cao & Alex Stringer  
 > *Preprint (2026)*  
-> Link: 
-
----
+> Link:  http://arxiv.org/abs/2609.04126
 
 ## 📂 Repository Structure
 
@@ -132,10 +130,12 @@ Rscript plot-sim.R
 If you use this code in your research, please cite our preprint:
 
 ```bibtex
-@article{yourname2026title,
-  title={Fast Computation of Nested Cross-Validation for Penalized Regression},
-  author={Shuyang Cao and Alex Stringer},
-  journal={arXiv},
-  year={2026}
+@misc{CaoStringer2026NCV,
+  title         = {Fast Computation of Nested Cross-Validation for Penalized Regression},
+  author        = {Shuyang Cao and Alex Stringer},
+  year          = {2026},
+  eprint        = {2609.04126},
+  archivePrefix = {arXiv},
+  url           = {http://arxiv.org/abs/2609.04126}
 }
 ```
