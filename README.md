@@ -3,8 +3,11 @@
 This repository contains the R source code required to reproduce the simulation results and figures presented in:
 
 > **Fast Computation of Nested Cross-Validation for Penalized Regression**
+>
 > Shuyang Cao & Alex Stringer
+>
 > *Preprint (2026)*
+>
 > Link:  http://arxiv.org/abs/2609.04126
 
 ## 📂 Repository Structure
