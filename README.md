@@ -10,23 +10,18 @@ This repository contains the R source code required to reproduce the simulation 
 ## 📂 Repository Structure
 
 ```
-├── .Rprofile 
-├── .gitignore          
+├── .gitignore  
 ├── README.md
-├── renv.lock  # Package version blueprint
-├── renv/      # System configuration folder for package reproducibility 
-│   ├── activate.R
-│   └── settings.json
 ├── run_all.R  # run all simulations with produced plots
 ├── time_comparison/
 │   ├── sim-code.R   # Runs time comparison simulation and saves output to a folder /results
 │   └── plot-sim.R   # Generate Figure 1 and Figure 2
 ├── comp_cutoff/
 │   ├── sim-code.R   # Runs simulation for predicting computation cutoff point
-│   └── plot-sim.R     # Generate Figure 3
+│   └── plot-sim.R   # Generate Figure 3
 ├── FPCR/
 │   ├── sim-code.R   # Runs FPCR simulation for tuning parameters
-│   └── plot-sim.R     # Generate Figure 4(a) and Figure 4(b)
+│   └── plot-sim.R   # Generate Figure 4(a) and Figure 4(b)
 ```
 
 ---
@@ -36,7 +31,7 @@ This repository contains the R source code required to reproduce the simulation 
 ### Software Prerequisites
 
 * **R Version:** `>= 4.2.0`
-* **Operating System:** Tested on macOS Sonoma / Ubuntu 22.04 / Windows 11
+* **Operating System:** Tested on macOS Sonoma / Ubuntu 22.04
 
 ### Required R Packages
 
@@ -77,7 +72,7 @@ install.packages(c("ggplot2", "dplyr", "purrr", "scales", "tidyverse", "parallel
 Clone or download this repository into a folder named `sims`:
 
 ```bash
-git clone https://github.com/HenrySyangC/Fast-NCV.git sims
+git clone https://github.com/HenrySyangC/Fast-NCV-paper-code.git sims
 ```
 
 Navigate into the folder:

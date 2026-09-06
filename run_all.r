@@ -4,13 +4,13 @@ FAST_DEMO <- if ("--test" %in% args) TRUE else FALSE
 
 if (FAST_DEMO) {
   message("\n=======================================================")
-  message("  Rnning TOY EXAMPLE simulations for testing")
+  message("  Runing TOY EXAMPLE simulations for testing")
   message("  Simulations will finish quickly.")
-  message("  To run full paper results, use: Rscript run_all.R --full")
+  message("  To run full paper results, use: Rscript run_all.R")
   message("=======================================================\n")
 } else {
   message("\n=======================================================")
-  message("  Rnning FULL simulations for reproduction")
+  message("  Runing FULL simulations for reproduction")
   message("  Warning: This may take several days to complete.")
   message("=======================================================\n")
 }
