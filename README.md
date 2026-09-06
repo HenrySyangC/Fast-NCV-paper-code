@@ -47,7 +47,6 @@ install.packages(c("ggplot2", "dplyr", "purrr", "scales", "tidyverse", "parallel
 ```
 
 * There is **no need** to install these packages beforehand, since the scripts will check whether they are already installed and install them if not.
-* Optional: If you want version control for packages I used, you can use `renv` with the renv folder I provided. Navigate to the simulation folder (ex: 'sims' in Step 3) and run `renv::restore()` before reproducing any simulation results.
 
 ---
 
