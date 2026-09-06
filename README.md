@@ -2,16 +2,16 @@
 
 This repository contains the R source code required to reproduce the simulation results and figures presented in:
 
-> **Fast Computation of Nested Cross-Validation for Penalized Regression**  
-> Shuyang Cao & Alex Stringer  
-> *Preprint (2026)*  
+> **Fast Computation of Nested Cross-Validation for Penalized Regression**
+> Shuyang Cao & Alex Stringer
+> *Preprint (2026)*
 > Link:  http://arxiv.org/abs/2609.04126
 
 ## 📂 Repository Structure
 
 ```
 ├── .Rprofile 
-├── .gitignore            
+├── .gitignore          
 ├── README.md
 ├── renv.lock  # Package version blueprint
 ├── renv/      # System configuration folder for package reproducibility 
@@ -34,33 +34,39 @@ This repository contains the R source code required to reproduce the simulation 
 ## 1. System Requirements & Dependencies
 
 ### Software Prerequisites
+
 * **R Version:** `>= 4.2.0`
 * **Operating System:** Tested on macOS Sonoma / Ubuntu 22.04 / Windows 11
 
 ### Required R Packages
+
 Ensure the following packages are installed before running the scripts:
 
 ```R
-install.packages(c("ggplot2", "dplyr", "purrr", "scales", "tidyverse", "parallel", 'Matrix', 'refund', 'fda', 'mgcv', 'mvtnorm'))
+install.packages(c("ggplot2", "dplyr", "purrr", "scales", "tidyverse", "parallel", 'Matrix', 'refund', 'fda', 'mgcv'))
 ```
 
-* There is **no need** to install these packages beforehand, since the scripts will check whether they are already installed and install them if not. 
+* There is **no need** to install these packages beforehand, since the scripts will check whether they are already installed and install them if not.
 * Optional: If you want version control for packages I used, you can use `renv` with the renv folder I provided. Navigate to the simulation folder (ex: 'sims' in Step 3) and run `renv::restore()` before reproducing any simulation results.
 
 ---
 
 ## 2. Paper-to-Code Matching
+
 ### time_comparison (Section 4--Figure 1 and Figure 2)
+
 + Compare computation time between the proposed formula and refitting the model
 + Replicate the simulation: `sim-code.R`
 + Visualize the results: `plot-sim.R`
 
 ### comp_cutoff (Section 4--Figure 3)
+
 + Predict the computation cutoff point of K (Proposition 2)
 + Replicate the simulation: `sim-code.R`
 + Visualize the results: `plot-sim.R`
 
 ### FPCR (Section 5--Figure 4(a) and Figure 4(b))
+
 + Tuning parameter selection with plot of generalization error and REML
 + Replicate the simulation: `sim-code.R`
 + Visualize the results: `plot-sim.R`
@@ -71,15 +77,15 @@ install.packages(c("ggplot2", "dplyr", "purrr", "scales", "tidyverse", "parallel
 
 Clone or download this repository into a folder named `sims`:
 
-   ```bash
-   git clone https://github.com/HenrySyangC/Fast-NCV.git sims
-   ```
+```bash
+git clone https://github.com/HenrySyangC/Fast-NCV.git sims
+```
 
 Navigate into the folder:
 
-   ```bash
-   cd sims
-   ```
+```bash
+cd sims
+```
 
 ### Option 1: Running All Simulations Together
 
@@ -88,6 +94,7 @@ Run the script run_all.R when navigating into ~/sims
 ```bash
 Rscript run_all.R
 ```
+
 ```bash
 # Simulations results and figures can be found in each individual simulation folder,
 # which are created automatically after running the script. 
@@ -114,13 +121,14 @@ Rscript plot-sim.R
 
 ### Estimated Computational Time
 
-| Simulation | Target Figure | Est. Runtime |
-| :--- | :--- | :--- |
-| **time_comparison** | Figure 1, Figure 2 | ~1.5 days |
-| **comp_cutoff** | Figure 3 | ~5 hours | 
-| **FPCR** | Figure 4(a), Figure 4(b) | ~10 mins |
 
-* ⚠️ Benchmarked on a **MacBook (M2)**. 
+| Simulation          | Target Figure            | Est. Runtime |
+| :------------------ | :----------------------- | :----------- |
+| **time_comparison** | Figure 1, Figure 2       | ~1.5 days    |
+| **comp_cutoff**     | Figure 3                 | ~5 hours     |
+| **FPCR**            | Figure 4(a), Figure 4(b) | ~10 mins     |
+
+* ⚠️ Benchmarked on a **MacBook (M2)**.
 * 💡 *Simulation **FPCR** supports parallel processing—running with more cores will reduce runtime.*
 
 ---

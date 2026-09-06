@@ -18,8 +18,7 @@ cat("Number of replications for benchmarking computation time is chosen as", rep
 
 ## import packages
 pkgs <- c(
-    'parallel', 'Matrix', 'refund', 'fda', 'mgcv', 
-    'mvtnorm'
+    'parallel', 'Matrix', 'refund', 'fda', 'mgcv'
 )
 suppressPackageStartupMessages({
   for (pkg in pkgs) {

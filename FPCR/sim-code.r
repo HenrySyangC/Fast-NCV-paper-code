@@ -18,8 +18,7 @@ cat("R is chosen as", r, "for nested cross-validation algorithm. \n")
 
 ## import packages
 pkgs <- c(
-    'parallel', 'Matrix', 'refund', 'fda', 'mgcv', 
-    'mvtnorm'
+    'parallel', 'Matrix', 'refund', 'fda', 'mgcv'
 )
 suppressPackageStartupMessages({
   for (pkg in pkgs) {
@@ -190,6 +189,16 @@ fit_fpcr <- function(X, y, pci, spline_num = 40, lam) {
 }
 
 # Function for generating data
+rmvnorm_base <- function(n, mean = rep(0, nrow(sigma)), sigma) {
+  p <- length(mean)
+  # Lower triangular matrix from Cholesky decomposition
+  L <- t(chol(sigma))
+  # Standard normal variates
+  Z <- matrix(rnorm(n * p), nrow = n, ncol = p)
+  # Transform to target multivariate normal distribution
+  t(mean + L %*% t(Z))
+}
+
 gendat2 <- function(N, P, noise_sd, rho = 2) {
   # Time grid and quadrature step size
   grid <- seq(0.01, 1, length.out = P)
@@ -203,7 +212,7 @@ gendat2 <- function(N, P, noise_sd, rho = 2) {
   Cov_mat <- exp(-dist_mat / rho)
   
   # Generate predictor matrix X
-  X <- rmvnorm(n = N, mean = rep(0, P), sigma = Cov_mat)
+  X <- rmvnorm_base(n = N, mean = rep(0, P), sigma = Cov_mat)
   
   # Compute continuous signal with step size dt
   signal <- as.vector((X %*% true_w) * dt)

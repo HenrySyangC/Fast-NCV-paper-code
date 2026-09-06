@@ -18,8 +18,7 @@ cat("Running", repos, "replications for benchmarking computation time of each (n
 
 ## import packages ##
 pkgs <- c(
-    'parallel', 'Matrix', 'refund', 'fda', 'mgcv', 
-    'mvtnorm'
+    'parallel', 'Matrix', 'refund', 'fda', 'mgcv'
 )
 suppressPackageStartupMessages({
   for (pkg in pkgs) {
